@@ -96,6 +96,9 @@ const profileSchema = new mongoose.Schema({
   courses: [courseModel],
   employment: [employmentModel],
   isComplete: { type: Boolean, default: false },
+  programme: { type: String },
+  graduationDate: { type: Date },
+  industrySector: { type: String },
   monthlyWins: { type: Number, default: 0, max: 3 },
   lastWinDate: Date,
   eventParticipation: [{

@@ -11,6 +11,7 @@ router.put('/me', validateProfile, checkValidation, ProfileController.updateProf
 router.post('/me/image', isAlumni, upload.single('profileImage'), ProfileController.uploadProfileImage);
 router.post('/me/education', isAlumni, ProfileController.addEducation);
 router.delete('/me/education/:educationId', isAlumni, ProfileController.deleteEducation);
+router.get('/search', ProfileController.searchProfiles);
 router.get('/:userId', ProfileController.getProfile);
 
 module.exports = router;

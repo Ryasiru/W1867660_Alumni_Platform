@@ -5,12 +5,13 @@ const bidService = require('../services/BidService');
 class BidController {
   async placeBid(req, res) {
     try {
-      const { amount } = req.body;
+      console.log(req.body)
+      const amount = req.body.bidAmount;
       const bidForDate = new Date(req.body.bidForDate);
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (bidForDate <= today) {
         return res.status(400).json({ error: 'Bid date must be in the future' });
       }
@@ -18,6 +19,7 @@ class BidController {
       const profile = await Profile.findOne({ user: req.user._id });
       if (!profile) return res.status(404).json({ error: 'Profile not found' });
 
+      console.log(amount);
       const bid = await bidService.placeBid(req.user._id, profile._id, amount, bidForDate);
 
       res.json({
@@ -82,7 +84,7 @@ class BidController {
   async getMonthlyWinCount(req, res) {
     try {
       const profile = await Profile.findOne({ user: req.user._id });
-      
+
       const firstDayOfMonth = new Date();
       firstDayOfMonth.setDate(1);
       firstDayOfMonth.setHours(0, 0, 0, 0);
@@ -98,7 +100,7 @@ class BidController {
         bidForDate: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }
       });
 
-      const maxWins = profile.eventParticipation.some(e => 
+      const maxWins = profile.eventParticipation.some(e =>
         e.extraBidEligible && e.eventDate > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       ) ? 4 : 3;
 

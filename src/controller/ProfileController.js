@@ -62,6 +62,9 @@ class ProfileController {
       if (profileData.licenses) profile.licenses = profileData.licenses;
       if (profileData.courses) profile.courses = profileData.courses;
       if (profileData.employment) profile.employment = profileData.employment;
+      if (profileData.programme) profile.programme = profileData.programme;
+      if (profileData.graduationDate) profile.graduationDate = profileData.graduationDate;
+      if (profileData.industrySector) profile.industrySector = profileData.industrySector;
 
       // Check if profile is complete
       profile.isComplete = !!(
@@ -157,11 +160,55 @@ class ProfileController {
           profileImage: profile.profileImage,
           education: profile.education,
           certifications: profile.certifications,
-          employment: profile.employment
+          employment: profile.employment,
+          programme: profile.programme,
+          graduationDate: profile.graduationDate,
+          industrySector: profile.industrySector
         }
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to get featured alumni' });
+    }
+  }
+
+  async searchProfiles(req, res) {
+    try {
+      const { programme, graduationDate, industrySector } = req.query;
+      
+      let query = {};
+      
+      if (programme) {
+        query.programme = { $regex: new RegExp(programme, 'i') };
+      }
+      
+      if (industrySector) {
+        query.industrySector = { $regex: new RegExp(industrySector, 'i') };
+      }
+      
+      if (graduationDate) {
+        // Find by year if it's just a year string, or exact match
+        const startDate = new Date(graduationDate);
+        if (!isNaN(startDate)) {
+           // Provide a wider range if graduationDate is just a year (e.g. 2024), 
+           // but for simple cases, we can search by exact or year bounds.
+           // Assuming graduationDate filter could be a year string.
+           if (graduationDate.length === 4) {
+             query.graduationDate = {
+               $gte: new Date(`${graduationDate}-01-01`),
+               $lte: new Date(`${graduationDate}-12-31`)
+             };
+           } else {
+             query.graduationDate = new Date(graduationDate);
+           }
+        }
+      }
+
+      const profiles = await Profile.find(query).populate('user', 'firstName lastName email role');
+      res.json(profiles);
+      
+    } catch (error) {
+      console.error("Error searching profiles:", error);
+      res.status(500).json({ error: 'Failed to search profiles' });
     }
   }
 }

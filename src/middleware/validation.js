@@ -19,7 +19,7 @@ const validateRegistration = [
     .isEmail()
     .normalizeEmail()
     .custom(value => {
-      if (!(value.endsWith('.ac.lk') || value.endsWith('gmail.com'))) {
+      if (!(value.endsWith('iit.ac.lk'))) {
         throw new Error('Must use university email for registration');
       }
       return true;
