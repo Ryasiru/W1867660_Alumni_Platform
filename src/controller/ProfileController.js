@@ -189,9 +189,6 @@ class ProfileController {
         // Find by year if it's just a year string, or exact match
         const startDate = new Date(graduationDate);
         if (!isNaN(startDate)) {
-           // Provide a wider range if graduationDate is just a year (e.g. 2024), 
-           // but for simple cases, we can search by exact or year bounds.
-           // Assuming graduationDate filter could be a year string.
            if (graduationDate.length === 4) {
              query.graduationDate = {
                $gte: new Date(`${graduationDate}-01-01`),
